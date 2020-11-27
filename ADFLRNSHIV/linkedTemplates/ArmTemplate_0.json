@@ -1,0 +1,653 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFLRNSHIV"
+		},
+		"ADFSinkSqlDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ADFSinkSqlDB'"
+		},
+		"BlobStorageADFSampleFiles_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BlobStorageADFSampleFiles'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ADFSinkSqlDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ADFSinkSqlDB_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobStorageADFSampleFiles')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('BlobStorageADFSampleFiles_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TestDriftSchemaRunTime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFSinkSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tablename": {
+						"type": "string",
+						"defaultValue": "vw_airtravel"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().tablename",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFSinkSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTableMetadata')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFSinkSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Primarykey",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Columnnames",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Sourcetablename",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Targettablename",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Active",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "StagingMetadata"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFSinkSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTableSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFSinkSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"sourcetablename": {
+						"type": "string",
+						"defaultValue": "addresses"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().sourcetablename",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFSinkSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTableTrgt')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFSinkSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"targettablename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().targettablename",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFSinkSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageADFSampleFiles",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tablefilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().tablefilename",
+							"type": "Expression"
+						},
+						"container": "adf-drift-schema"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageADFSampleFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/drfitschemasqldf')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTableSrc",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTableTrgt",
+								"type": "DatasetReference"
+							},
+							"name": "target"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTableTrgt",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sourcehash"
+						},
+						{
+							"name": "targethash"
+						},
+						{
+							"name": "Inserts"
+						},
+						{
+							"name": "MarkedInserts"
+						},
+						{
+							"name": "TrueUpdates"
+						},
+						{
+							"name": "MarkedUpdates"
+						},
+						{
+							"name": "Union1"
+						},
+						{
+							"name": "FilterHash"
+						}
+					],
+					"script": "parameters{\n\tprimarykey as string,\n\tcolumnnames as string,\n\tsourcetablename as string,\n\ttargettablename as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> target\nsource1 derive(id_hash = byName($primarykey),\n\t\tcolumn_hash = md5(byNames(split($columnnames,',')))) ~> sourcehash\ntarget derive(id_hash = byName($primarykey),\n\t\tcolumn_hash = md5(byNames(split($columnnames,',')))) ~> targethash\nsourcehash, targethash exists(sourcehash@id_hash == targethash@id_hash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Inserts\nInserts alterRow(insertIf(true())) ~> MarkedInserts\nsourcehash, targethash exists(and(sourcehash@id_hash == targethash@id_hash ,sourcehash@column_hash!=targethash@column_hash),\n\tnegate:false,\n\tbroadcast: 'auto')~> TrueUpdates\nTrueUpdates alterRow(updateIf(true())) ~> MarkedUpdates\nMarkedInserts, MarkedUpdates union(byName: true)~> Union1\nUnion1 select(mapColumn(\n\t\teach(match(!in(['id_hash','column_hash'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> FilterHash\nFilterHash sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:[($primarykey)],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTableSrc')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTableTrgt')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/driftschemawithtemporal')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "SourceDS"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "Target"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SourceHashes"
+						},
+						{
+							"name": "TargetHashes"
+						},
+						{
+							"name": "Exists1"
+						},
+						{
+							"name": "Inserts"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Exists2"
+						},
+						{
+							"name": "AlterRow3"
+						},
+						{
+							"name": "Updates"
+						}
+					],
+					"script": "parameters{\n\tprimarykey as string,\n\tcolumnnames as string,\n\ttablefilename as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:[($tablefilename)]) ~> SourceDS\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Target\nSourceDS derive(id_hash = byName($primarykey),\n\t\tcolumns_hash = md5(byNames(split($columnnames,',')))) ~> SourceHashes\nTarget derive(id_hash = byName($primarykey),\n\t\tcolumns_hash = md5(byNames(split($columnnames,',')))) ~> TargetHashes\nSourceHashes, TargetHashes exists(SourceHashes@id_hash == TargetHashes@id_hash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 alterRow(insertIf(true())) ~> Inserts\nInserts select(mapColumn(\n\t\teach(match(!in(['id_hash','columns_hash','sysstarttime','sysendtime','updated_date'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSourceHashes, TargetHashes exists(and(SourceHashes@id_hash == TargetHashes@id_hash ,SourceHashes@columns_hash!=TargetHashes@columns_hash),\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists2\nExists2 alterRow(updateIf(true())) ~> AlterRow3\nAlterRow3 select(mapColumn(\n\t\teach(match(!in(['id_hash','columns_hash','sysstarttime','sysendtime'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Updates\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nUpdates sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:[($primarykey)],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "driftschemawithtemporal",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "driftschemawithtemporal",
+								"type": "DataFlowReference",
+								"parameters": {
+									"primarykey": {
+										"value": "'@{pipeline().parameters.primarykey}'",
+										"type": "Expression"
+									},
+									"columnnames": {
+										"value": "'@{pipeline().parameters.columnnames}'",
+										"type": "Expression"
+									},
+									"tablefilename": {
+										"value": "'@{pipeline().parameters.tablefilename}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"SourceDS": {
+										"tablefilename": "@pipeline().parameters.tablefilename"
+									},
+									"Target": {
+										"tablename": "@pipeline().parameters.tablename"
+									},
+									"sink1": {
+										"tablename": "@pipeline().parameters.tablename"
+									},
+									"sink2": {
+										"tablename": "vw_airtravel"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"parameters": {
+					"primarykey": {
+						"type": "string",
+						"defaultValue": "Month"
+					},
+					"columnnames": {
+						"type": "string",
+						"defaultValue": "Firstyear,Secondyear,Thirdyear"
+					},
+					"tablename": {
+						"type": "string",
+						"defaultValue": "vw_airtravel"
+					},
+					"tablefilename": {
+						"type": "string",
+						"defaultValue": "airtravel.csv"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-11-27T09:46:54Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/driftschemawithtemporal')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "drfitschemasqldf",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "drfitschemasqldf",
+								"type": "DataFlowReference",
+								"parameters": {
+									"primarykey": {
+										"value": "'@{pipeline().parameters.primarykey}'",
+										"type": "Expression"
+									},
+									"columnnames": {
+										"value": "'@{pipeline().parameters.columnnames}'",
+										"type": "Expression"
+									},
+									"sourcetablename": {
+										"value": "'@{pipeline().parameters.sourcetablename}'",
+										"type": "Expression"
+									},
+									"targettablename": {
+										"value": "'@{pipeline().parameters.targettablename}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"source1": {
+										"sourcetablename": {
+											"value": "@pipeline().parameters.sourcetablename",
+											"type": "Expression"
+										}
+									},
+									"target": {
+										"targettablename": {
+											"value": "@pipeline().parameters.targettablename",
+											"type": "Expression"
+										}
+									},
+									"sink1": {
+										"targettablename": {
+											"value": "@pipeline().parameters.targettablename",
+											"type": "Expression"
+										}
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"parameters": {
+					"primarykey": {
+						"type": "string",
+						"defaultValue": "Month"
+					},
+					"columnnames": {
+						"type": "string",
+						"defaultValue": "firstyear,Secondyear,Thirdyear"
+					},
+					"sourcetablename": {
+						"type": "string",
+						"defaultValue": "airtravelsrc"
+					},
+					"targettablename": {
+						"type": "string",
+						"defaultValue": "vw_airtravel"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/drfitschemasqldf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "Execute Pipeline1",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pipeline2",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": false,
+										"parameters": {
+											"primarykey": {
+												"value": "@item().primarykey",
+												"type": "Expression"
+											},
+											"columnnames": {
+												"value": "@item().columnnames",
+												"type": "Expression"
+											},
+											"sourcetablename": {
+												"value": "@item().sourcetablename",
+												"type": "Expression"
+											},
+											"targettablename": {
+												"value": "@item().targettablename",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "Select primarykey,columnnames,sourcetablename,targettablename from dbo.stagingmetadata",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTableMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTableMetadata')]",
+				"[concat(variables('factoryId'), '/pipelines/pipeline2')]"
+			]
+		}
+	]
+}
