@@ -20,19 +20,19 @@
 						"type": "DataFlowReference",
 						"parameters": {
 							"primarykey": {
-								"value": "'@{pipeline().parameters.primarykey}'",
+								"value": "@pipeline().parameters.primarykey",
 								"type": "Expression"
 							},
 							"columnnames": {
-								"value": "'@{pipeline().parameters.columnnames}'",
+								"value": "@pipeline().parameters.columnnames",
 								"type": "Expression"
 							},
 							"sourcetablename": {
-								"value": "'@{pipeline().parameters.sourcetablename}'",
+								"value": "@pipeline().parameters.sourcetablename",
 								"type": "Expression"
 							},
 							"targettablename": {
-								"value": "'@{pipeline().parameters.targettablename}'",
+								"value": "@pipeline().parameters.targettablename",
 								"type": "Expression"
 							}
 						},
