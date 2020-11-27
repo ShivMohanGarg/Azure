@@ -30,13 +30,22 @@
 						},
 						"datasetParameters": {
 							"source1": {
-								"sourcetablename": "addresses"
+								"sourcetablename": {
+									"value": "@pipeline().parameters.sourcetablename",
+									"type": "Expression"
+								}
 							},
 							"target": {
-								"targettablename": "vw_addresses"
+								"targettablename": {
+									"value": "@pipeline().parameters.targettablename",
+									"type": "Expression"
+								}
 							},
 							"sink1": {
-								"targettablename": "vw_addresses"
+								"targettablename": {
+									"value": "@pipeline().parameters.targettablename",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -55,15 +64,15 @@
 			},
 			"columnnames": {
 				"type": "string",
-				"defaultValue": "Firstname,Lastname,Address,County,State,Pin"
+				"defaultValue": "Month,Firstyear,Secondyear,Thirdyear"
 			},
 			"sourcetablename": {
 				"type": "string",
-				"defaultValue": "addresses"
+				"defaultValue": "airtravelsrc"
 			},
 			"targettablename": {
 				"type": "string",
-				"defaultValue": "vw_addresses"
+				"defaultValue": "vw_airtravel"
 			}
 		},
 		"annotations": []
