@@ -26,6 +26,14 @@
 							"columnnames": {
 								"value": "'@{pipeline().parameters.columnnames}'",
 								"type": "Expression"
+							},
+							"sourcetablename": {
+								"value": "'@{pipeline().parameters.sourcetablename}'",
+								"type": "Expression"
+							},
+							"targettablename": {
+								"value": "'@{pipeline().parameters.targettablename}'",
+								"type": "Expression"
 							}
 						},
 						"datasetParameters": {
