@@ -68,11 +68,11 @@
 		"parameters": {
 			"primarykey": {
 				"type": "string",
-				"defaultValue": "ID"
+				"defaultValue": "Month"
 			},
 			"columnnames": {
 				"type": "string",
-				"defaultValue": "Month,Firstyear,Secondyear,Thirdyear"
+				"defaultValue": "Firstyear,Secondyear,Thirdyear"
 			},
 			"sourcetablename": {
 				"type": "string",
