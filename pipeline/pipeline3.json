@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Execute Pipeline1').output",
+						"value": "@activity('Lookup1').output",
 						"type": "Expression"
 					},
 					"isSequential": false,
@@ -34,19 +34,19 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"primarykey": {
-										"value": "@activity('Lookup1').output.primarykey",
+										"value": "@item().primarykey",
 										"type": "Expression"
 									},
 									"columnnames": {
-										"value": "@activity('Lookup1').output.columnnames",
+										"value": "@item().columnnames",
 										"type": "Expression"
 									},
 									"sourcetablename": {
-										"value": "@activity('Lookup1').output.sourcetablename",
+										"value": "@item().sourcetablename",
 										"type": "Expression"
 									},
 									"targettablename": {
-										"value": "@activity('Lookup1').output.targettablename",
+										"value": "@item().targettablename",
 										"type": "Expression"
 									}
 								}
