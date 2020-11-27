@@ -1,0 +1,80 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "driftschemawithtemporal",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "driftschemawithtemporal",
+						"type": "DataFlowReference",
+						"parameters": {
+							"primarykey": {
+								"value": "'@{pipeline().parameters.primarykey}'",
+								"type": "Expression"
+							},
+							"columnnames": {
+								"value": "'@{pipeline().parameters.columnnames}'",
+								"type": "Expression"
+							},
+							"tablefilename": {
+								"value": "'@{pipeline().parameters.tablefilename}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SourceDS": {
+								"tablefilename": "@pipeline().parameters.tablefilename"
+							},
+							"Target": {
+								"tablename": "@pipeline().parameters.tablename"
+							},
+							"sink1": {
+								"tablename": "@pipeline().parameters.tablename"
+							},
+							"sink2": {
+								"tablename": "vw_airtravel"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"primarykey": {
+				"type": "string",
+				"defaultValue": "Month"
+			},
+			"columnnames": {
+				"type": "string",
+				"defaultValue": "Firstyear,Secondyear,Thirdyear"
+			},
+			"tablename": {
+				"type": "string",
+				"defaultValue": "vw_airtravel"
+			},
+			"tablefilename": {
+				"type": "string",
+				"defaultValue": "airtravel.csv"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-11-27T09:46:54Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,67 @@
+{
+	"name": "driftschemawithtemporal",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "SourceDS"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "Target"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SourceHashes"
+				},
+				{
+					"name": "TargetHashes"
+				},
+				{
+					"name": "Exists1"
+				},
+				{
+					"name": "Inserts"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "Exists2"
+				},
+				{
+					"name": "AlterRow3"
+				},
+				{
+					"name": "Updates"
+				}
+			],
+			"script": "parameters{\n\tprimarykey as string,\n\tcolumnnames as string,\n\ttablefilename as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:[($tablefilename)]) ~> SourceDS\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Target\nSourceDS derive(id_hash = byName($primarykey),\n\t\tcolumns_hash = md5(byNames(split($columnnames,',')))) ~> SourceHashes\nTarget derive(id_hash = byName($primarykey),\n\t\tcolumns_hash = md5(byNames(split($columnnames,',')))) ~> TargetHashes\nSourceHashes, TargetHashes exists(SourceHashes@id_hash == TargetHashes@id_hash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 alterRow(insertIf(true())) ~> Inserts\nInserts select(mapColumn(\n\t\teach(match(!in(['id_hash','columns_hash','sysstarttime','sysendtime','updated_date'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSourceHashes, TargetHashes exists(and(SourceHashes@id_hash == TargetHashes@id_hash ,SourceHashes@columns_hash!=TargetHashes@columns_hash),\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists2\nExists2 alterRow(updateIf(true())) ~> AlterRow3\nAlterRow3 select(mapColumn(\n\t\teach(match(!in(['id_hash','columns_hash','sysstarttime','sysendtime'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Updates\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nUpdates sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:[($primarykey)],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
+		}
+	}
+}
