@@ -1,0 +1,43 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "drfitschemasqldf",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "drfitschemasqldf",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"sourcetablename": "addresses"
+							},
+							"target": {
+								"targettablename": "vw_addresses"
+							},
+							"sink1": {
+								"targettablename": "vw_addresses"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
