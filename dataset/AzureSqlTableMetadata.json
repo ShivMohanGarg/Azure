@@ -1,0 +1,42 @@
+{
+	"name": "AzureSqlTableMetadata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFSinkSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Primarykey",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Columnnames",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Sourcetablename",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Targettablename",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Active",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "StagingMetadata"
+		}
+	}
+}
