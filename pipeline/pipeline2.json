@@ -18,6 +18,16 @@
 					"dataflow": {
 						"referenceName": "drfitschemasqldf",
 						"type": "DataFlowReference",
+						"parameters": {
+							"primarykey": {
+								"value": "'@{pipeline().parameters.primarykey}'",
+								"type": "Expression"
+							},
+							"columnnames": {
+								"value": "'@{pipeline().parameters.columnnames}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"source1": {
 								"sourcetablename": "addresses"
@@ -38,6 +48,14 @@
 				}
 			}
 		],
+		"parameters": {
+			"primarykey": {
+				"type": "string"
+			},
+			"columnnames": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
