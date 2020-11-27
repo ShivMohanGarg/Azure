@@ -7,8 +7,7 @@
 		},
 		"parameters": {
 			"targettablename": {
-				"type": "string",
-				"defaultValue": "vw_addresses"
+				"type": "string"
 			}
 		},
 		"annotations": [],
