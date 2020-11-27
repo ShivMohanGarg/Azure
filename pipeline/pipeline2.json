@@ -50,10 +50,12 @@
 		],
 		"parameters": {
 			"primarykey": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "ID"
 			},
 			"columnnames": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Firstname,Lastname,Address,County,State,Pin"
 			}
 		},
 		"annotations": []
