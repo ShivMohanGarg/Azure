@@ -1,0 +1,69 @@
+{
+	"name": "AzureSqlTableSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFSinkSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sourcetablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "AccountKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ParentAccountKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AccountCodeAlternateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ParentAccountCodeAlternateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AccountDescription",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AccountType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Operator",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CustomMembers",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ValueType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CustomMemberOptions",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().sourcetablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
