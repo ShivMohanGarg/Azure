@@ -1,0 +1,60 @@
+{
+	"name": "drfitschemasqldf",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTableSrc",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTableTrgt",
+						"type": "DatasetReference"
+					},
+					"name": "target"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTableTrgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sourcehash"
+				},
+				{
+					"name": "targethash"
+				},
+				{
+					"name": "Inserts"
+				},
+				{
+					"name": "MarkedInserts"
+				},
+				{
+					"name": "TrueUpdates"
+				},
+				{
+					"name": "MarkedUpdates"
+				},
+				{
+					"name": "Union1"
+				},
+				{
+					"name": "FilterHash"
+				}
+			],
+			"script": "parameters{\n\tprimarykey as string,\n\tcolumnnames as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> target\nsource1 derive(id_hash = byName($primarykey),\n\t\tcolumn_hash = md5(byNames(split($columnnames,',')))) ~> sourcehash\ntarget derive(id_hash = byName($primarykey),\n\t\tcolumn_hash = md5(byNames(split($columnnames,',')))) ~> targethash\nsourcehash, targethash exists(sourcehash@id_hash == targethash@id_hash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Inserts\nInserts alterRow(insertIf(true())) ~> MarkedInserts\nsourcehash, targethash exists(and(sourcehash@id_hash == targethash@id_hash ,sourcehash@column_hash!=targethash@column_hash),\n\tnegate:false,\n\tbroadcast: 'auto')~> TrueUpdates\nTrueUpdates alterRow(updateIf(true())) ~> MarkedUpdates\nMarkedInserts, MarkedUpdates union(byName: true)~> Union1\nUnion1 select(mapColumn(\n\t\teach(match(!in(['id_hash','column_hash'],name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> FilterHash\nFilterHash sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:[($primarykey)],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}
