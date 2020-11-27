@@ -1,0 +1,88 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "drfitschemasqldf",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "drfitschemasqldf",
+						"type": "DataFlowReference",
+						"parameters": {
+							"primarykey": {
+								"value": "'@{pipeline().parameters.primarykey}'",
+								"type": "Expression"
+							},
+							"columnnames": {
+								"value": "'@{pipeline().parameters.columnnames}'",
+								"type": "Expression"
+							},
+							"sourcetablename": {
+								"value": "'@{pipeline().parameters.sourcetablename}'",
+								"type": "Expression"
+							},
+							"targettablename": {
+								"value": "'@{pipeline().parameters.targettablename}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"sourcetablename": {
+									"value": "@pipeline().parameters.sourcetablename",
+									"type": "Expression"
+								}
+							},
+							"target": {
+								"targettablename": {
+									"value": "@pipeline().parameters.targettablename",
+									"type": "Expression"
+								}
+							},
+							"sink1": {
+								"targettablename": {
+									"value": "@pipeline().parameters.targettablename",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"primarykey": {
+				"type": "string",
+				"defaultValue": "Month"
+			},
+			"columnnames": {
+				"type": "string",
+				"defaultValue": "firstyear,Secondyear,Thirdyear"
+			},
+			"sourcetablename": {
+				"type": "string",
+				"defaultValue": "airtravelsrc"
+			},
+			"targettablename": {
+				"type": "string",
+				"defaultValue": "vw_airtravel"
+			}
+		},
+		"annotations": []
+	}
+}

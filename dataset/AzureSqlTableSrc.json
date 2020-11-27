@@ -1,0 +1,25 @@
+{
+	"name": "AzureSqlTableSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFSinkSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sourcetablename": {
+				"type": "string",
+				"defaultValue": "addresses"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().sourcetablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
