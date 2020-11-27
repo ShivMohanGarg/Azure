@@ -68,19 +68,19 @@
 		"parameters": {
 			"primarykey": {
 				"type": "string",
-				"defaultValue": "Month"
+				"defaultValue": "ID"
 			},
 			"columnnames": {
 				"type": "string",
-				"defaultValue": "Firstyear,Secondyear,Thirdyear"
+				"defaultValue": "Firstname,Lastname,Address,County,State,Pin"
 			},
 			"sourcetablename": {
 				"type": "string",
-				"defaultValue": "airtravelsrc"
+				"defaultValue": "addresses"
 			},
 			"targettablename": {
 				"type": "string",
-				"defaultValue": "vw_airtravel"
+				"defaultValue": "vw_addresses"
 			}
 		},
 		"annotations": []
