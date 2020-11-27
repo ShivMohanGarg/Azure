@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "",
+						"value": "@activity('Execute Pipeline1').output",
 						"type": "Expression"
 					},
 					"isSequential": false,
