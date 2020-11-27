@@ -56,6 +56,14 @@
 			"columnnames": {
 				"type": "string",
 				"defaultValue": "Firstname,Lastname,Address,County,State,Pin"
+			},
+			"sourcetablename": {
+				"type": "string",
+				"defaultValue": "addresses"
+			},
+			"targettablename": {
+				"type": "string",
+				"defaultValue": "vw_addresses"
 			}
 		},
 		"annotations": []
