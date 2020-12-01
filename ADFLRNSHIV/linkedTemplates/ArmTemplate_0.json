@@ -523,11 +523,11 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "TestDriftSchemaRunTime",
+								"type": "IntegrationRuntimeReference"
 							},
-							"traceLevel": "Fine"
+							"traceLevel": "Coarse"
 						}
 					}
 				],
@@ -552,7 +552,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/drfitschemasqldf')]"
+				"[concat(variables('factoryId'), '/dataflows/drfitschemasqldf')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/TestDriftSchemaRunTime')]"
 			]
 		},
 		{
