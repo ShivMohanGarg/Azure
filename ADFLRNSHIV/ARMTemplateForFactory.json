@@ -277,6 +277,10 @@
 									"userProperties": [],
 									"typeProperties": {
 										"url": "https://prod-32.eastus.logic.azure.com/workflows/2413d7212fdb43c6a255b6bc9d52504e",
+										"connectVia": {
+											"referenceName": "TestDriftSchemaRunTime",
+											"type": "IntegrationRuntimeReference"
+										},
 										"method": "POST",
 										"headers": {
 											"Content-Type": "application/json"
@@ -326,7 +330,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTableMetadata')]",
-				"[concat(variables('factoryId'), '/pipelines/pipeline2')]"
+				"[concat(variables('factoryId'), '/pipelines/pipeline2')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/TestDriftSchemaRunTime')]"
 			]
 		},
 		{
