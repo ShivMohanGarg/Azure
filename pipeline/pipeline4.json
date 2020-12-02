@@ -1,0 +1,40 @@
+{
+	"name": "pipeline4",
+	"properties": {
+		"activities": [
+			{
+				"name": "Send Success Message",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-32.eastus.logic.azure.com/workflows/2413d7212fdb43c6a255b6bc9d52504e",
+					"connectVia": {
+						"referenceName": "TestDriftSchemaRunTime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"DataFactoryName": "@{pipeline().DataFactory}",
+						"EmailTo": "shiv.mohan@centricconsulting.com",
+						"ErrorMessage": "test email notification",
+						"ParameterSet": "test parameters set",
+						"PipelineName": "@{pipeline().Pipeline}",
+						"Subject": "Error Notification - Support Team"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
