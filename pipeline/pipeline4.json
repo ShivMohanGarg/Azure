@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://prod-32.eastus.logic.azure.com/workflows/2413d7212fdb43c6a255b6bc9d52504e?api-version=2019-06-01-preview",
+					"url": "https://prod-32.eastus.logic.azure.com:443/workflows/2413d7212fdb43c6a255b6bc9d52504e/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fn-jUjI8zd8uIImbBhzP9Qsz9G2V3vkR9Y-4VTGp3QU",
 					"connectVia": {
 						"referenceName": "TestDriftSchemaRunTime",
 						"type": "IntegrationRuntimeReference"
