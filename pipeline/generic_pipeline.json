@@ -85,7 +85,7 @@
 									"DataFactoryName": "@{pipeline().DataFactory}",
 									"EmailTo": "@pipeline().parameters.EmailTo",
 									"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
-									"ParameterSet": "@item().sourcetablename",
+									"ParameterSet": "@{item().sourcetablename}",
 									"PipelineName": "@{pipeline().Pipeline}",
 									"Subject": "Error Notification - Support Team"
 								}
