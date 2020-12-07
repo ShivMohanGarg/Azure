@@ -26,9 +26,9 @@
 					},
 					"body": {
 						"DataFactoryName": "@{pipeline().DataFactory}",
-						"EmailTo": "shiv.mohan@centricconsulting.com",
-						"ErrorMessage": "test email notification",
-						"ParameterSet": "test parameters set",
+						"EmailTo": "@pipeline().parameters.EmailTo",
+						"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
+						"ParameterSet": "@item().sourcetablename",
 						"PipelineName": "@{pipeline().Pipeline}",
 						"Subject": "Error Notification - Support Team"
 					}
