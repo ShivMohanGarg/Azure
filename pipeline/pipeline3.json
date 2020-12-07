@@ -177,6 +177,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "depricated"
+		},
 		"annotations": []
 	}
 }
