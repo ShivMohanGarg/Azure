@@ -53,7 +53,7 @@
 							}
 						},
 						{
-							"name": "Send Success Message",
+							"name": "Send Notification Message",
 							"type": "WebActivity",
 							"dependsOn": [
 								{
