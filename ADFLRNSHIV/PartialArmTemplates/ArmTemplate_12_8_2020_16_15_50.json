@@ -1,0 +1,81 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFLRNSHIV"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Send Notification Message",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-32.eastus.logic.azure.com:443/workflows/2413d7212fdb43c6a255b6bc9d52504e/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fn-jUjI8zd8uIImbBhzP9Qsz9G2V3vkR9Y-4VTGp3QU",
+							"connectVia": {
+								"referenceName": "TestDriftSchemaRunTime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "{\n\t\"DataFactoryName\":\"@{pipeline().parameters.DataFactoryName}\",\n\t\"EmailTo\":\"@pipeline().parameters.EmailTo\",\n\t\"ErrorMessage\":\"@pipeline().parameters.ErrorMessage\",\n\t\"ParameterSet\":\"@pipeline().parameters.ParameterSet\",\n\t\"PipelineName\":\"@pipeline().parameters.PipelineName\",\n\t\"Subject\":\"@pipeline().parameters.Subject\"\n}\n\n",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"Subject": {
+						"type": "string",
+						"defaultValue": "Drift Template Notification"
+					},
+					"DataFactoryName": {
+						"type": "string",
+						"defaultValue": "ADFLRNSHIV"
+					},
+					"PipelineName": {
+						"type": "string",
+						"defaultValue": "Generic Pipeline"
+					},
+					"ErrorMessage": {
+						"type": "string",
+						"defaultValue": "There is some error in execution , please check logs !"
+					},
+					"ParameterSet": {
+						"type": "string",
+						"defaultValue": "Table name:"
+					},
+					"EmailTo": {
+						"type": "string",
+						"defaultValue": "shiv.mohan@centricconsulting.com"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
