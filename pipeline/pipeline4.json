@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Send Success Message",
+				"name": "Send Notification Message",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -24,17 +24,30 @@
 					"headers": {
 						"Content-Type": "application/json"
 					},
-					"body": {
-						"DataFactoryName": "@{pipeline().DataFactory}",
-						"EmailTo": "@pipeline().parameters.EmailTo",
-						"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
-						"ParameterSet": "@item().sourcetablename",
-						"PipelineName": "@{pipeline().Pipeline}",
-						"Subject": "Error Notification - Support Team"
-					}
+					"body": "{\n\t\"Subject\":\"@pipeline().parameters.Subject\",\n\t\"DataFactory\":\"@{pipeline().parameters.DataFactory}\",\n\t\"Pipeline\":\"@pipeline().parameters.Pipeline\",\n\t\"ErrorMessage\":\"@pipeline().parameters.ErrorMessage\",\n\t\"ParameterSet\":\"@pipeline().parameters.ParameterSet\"\n\t\"EmailTo\":\"@pipeline().parameters.EmailTo\"\n}"
 				}
 			}
 		],
+		"parameters": {
+			"Subject": {
+				"type": "string"
+			},
+			"DataFactory": {
+				"type": "string"
+			},
+			"Pipeline": {
+				"type": "string"
+			},
+			"ErrorMessage": {
+				"type": "string"
+			},
+			"ParameterSet": {
+				"type": "string"
+			},
+			"EmailTo": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
