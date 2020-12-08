@@ -678,6 +678,34 @@
 											}
 										}
 									}
+								},
+								{
+									"name": "pipeline4",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Execute Pipeline1",
+											"dependencyConditions": [
+												"Completed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pipeline4",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"Subject": "Drift Template Notification",
+											"DataFactoryName": "@{pipeline().DataFactory}",
+											"PipelineName": "@{pipeline().Pipeline}",
+											"ErrorMessage": "Check Logs",
+											"ParameterSet": "@item().sourcetablename",
+											"EmailTo": "shiv.mohan@centricconsulting.com"
+										}
+									}
 								}
 							]
 						}
@@ -714,7 +742,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTableMetadata')]",
-				"[concat(variables('factoryId'), '/pipelines/pipeline2')]"
+				"[concat(variables('factoryId'), '/pipelines/pipeline2')]",
+				"[concat(variables('factoryId'), '/pipelines/pipeline4')]"
 			]
 		}
 	]
