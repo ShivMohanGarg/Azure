@@ -24,7 +24,10 @@
 					"headers": {
 						"Content-Type": "application/json"
 					},
-					"body": "{\n\t\"Subject\":\"@pipeline().parameters.Subject\",\n\t\"DataFactory\":\"@{pipeline().parameters.DataFactory}\",\n\t\"Pipeline\":\"@pipeline().parameters.Pipeline\",\n\t\"ErrorMessage\":\"@pipeline().parameters.ErrorMessage\",\n\t\"ParameterSet\":\"@pipeline().parameters.ParameterSet\"\n\t\"EmailTo\":\"@pipeline().parameters.EmailTo\"\n}"
+					"body": {
+						"value": "{\n\t\"DataFactoryName\":\"@{pipeline().parameters.DataFactory}\",\n\t\"EmailTo\":\"@pipeline().parameters.EmailTo\",\n\t\"ErrorMessage\":\"@pipeline().parameters.ErrorMessage\",\n\t\"ParameterSet\":\"@pipeline().parameters.ParameterSet\",\n\t\"PipelineName\":\"@pipeline().parameters.Pipeline\",\n\t\"Subject\":\"@pipeline().parameters.Subject\"\n}\n\n",
+						"type": "Expression"
+					}
 				}
 			}
 		],
@@ -33,11 +36,11 @@
 				"type": "string",
 				"defaultValue": "Drift Template Notification"
 			},
-			"DataFactory": {
+			"DataFactoryName": {
 				"type": "string",
 				"defaultValue": "ADFLRNSHIV"
 			},
-			"Pipeline": {
+			"PipelineName": {
 				"type": "string",
 				"defaultValue": "Generic Pipeline"
 			},
