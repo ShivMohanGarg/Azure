@@ -51,45 +51,6 @@
 									}
 								}
 							}
-						},
-						{
-							"name": "Send Notification Message",
-							"type": "WebActivity",
-							"dependsOn": [
-								{
-									"activity": "Execute Pipeline1",
-									"dependencyConditions": [
-										"Completed"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"url": "https://prod-32.eastus.logic.azure.com/workflows/2413d7212fdb43c6a255b6bc9d52504e",
-								"connectVia": {
-									"referenceName": "TestDriftSchemaRunTime",
-									"type": "IntegrationRuntimeReference"
-								},
-								"method": "POST",
-								"headers": {
-									"Content-Type": "application/json"
-								},
-								"body": {
-									"DataFactoryName": "@{pipeline().DataFactory}",
-									"EmailTo": "@pipeline().parameters.EmailTo",
-									"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
-									"ParameterSet": "@{item().sourcetablename}",
-									"PipelineName": "@{pipeline().Pipeline}",
-									"Subject": "Error Notification - Support Team"
-								}
-							}
 						}
 					]
 				}
