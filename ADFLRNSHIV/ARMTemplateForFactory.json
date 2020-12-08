@@ -21,28 +21,98 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/StartIR')]",
+			"name": "[concat(parameters('factoryName'), '/generic_pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "WebHook1",
-						"type": "WebHook",
-						"dependsOn": [],
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
-							"url": "https://0848f3f2-f53d-4b75-aedb-09bad2730840.webhook.eus.azure-automation.net/webhooks?token=CEhiRZiZyOhA6oM2wAd5iNpqM6uBJdf16CvGeTRTN1o%3d",
-							"method": "POST",
-							"headers": {},
-							"body": {},
-							"timeout": "00:10:00"
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Execute Pipeline1",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pipeline2",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": false,
+										"parameters": {
+											"primarykey": {
+												"value": "@item().primarykey",
+												"type": "Expression"
+											},
+											"columnnames": {
+												"value": "@item().columnnames",
+												"type": "Expression"
+											},
+											"sourcetablename": {
+												"value": "@item().sourcetablename",
+												"type": "Expression"
+											},
+											"targettablename": {
+												"value": "@item().targettablename",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "Select primarykey,columnnames,sourcetablename,targettablename from dbo.stagingmetadata",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTableMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTableMetadata')]",
+				"[concat(variables('factoryId'), '/pipelines/pipeline2')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
@@ -225,207 +295,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup1').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "Execute Pipeline1",
-									"type": "ExecutePipeline",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "pipeline2",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": false,
-										"parameters": {
-											"primarykey": {
-												"value": "@item().primarykey",
-												"type": "Expression"
-											},
-											"columnnames": {
-												"value": "@item().columnnames",
-												"type": "Expression"
-											},
-											"sourcetablename": {
-												"value": "@item().sourcetablename",
-												"type": "Expression"
-											},
-											"targettablename": {
-												"value": "@item().targettablename",
-												"type": "Expression"
-											}
-										}
-									}
-								},
-								{
-									"name": "Send Success Message",
-									"type": "WebActivity",
-									"dependsOn": [
-										{
-											"activity": "Execute Pipeline1",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"url": "https://prod-32.eastus.logic.azure.com/workflows/2413d7212fdb43c6a255b6bc9d52504e",
-										"connectVia": {
-											"referenceName": "TestDriftSchemaRunTime",
-											"type": "IntegrationRuntimeReference"
-										},
-										"method": "POST",
-										"headers": {
-											"Content-Type": "application/json"
-										},
-										"body": {
-											"DataFactoryName": "@{pipeline().DataFactory}",
-											"EmailTo": "shiv.mohan@centricconsulting.com",
-											"ErrorMessage": "test email notification",
-											"ParameterSet": "test parameters set",
-											"PipelineName": "@{pipeline().Pipeline}",
-											"Subject": "Error Notification - Support Team"
-										}
-									}
-								}
-							]
-						}
-					},
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Wait1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "Select primarykey,columnnames,sourcetablename,targettablename from dbo.stagingmetadata",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "AzureSqlTableMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "StartIR",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "StartIR",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "StopIR",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "ForEach1",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "StopIR",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Wait1",
-						"type": "Wait",
-						"dependsOn": [
-							{
-								"activity": "StartIR",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": 2700
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTableMetadata')]",
-				"[concat(variables('factoryId'), '/pipelines/StartIR')]",
-				"[concat(variables('factoryId'), '/pipelines/StopIR')]",
-				"[concat(variables('factoryId'), '/pipelines/pipeline2')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/TestDriftSchemaRunTime')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/pipeline4')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Send Success Message",
+						"name": "Send Notification Message",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
@@ -447,16 +323,38 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"DataFactoryName": "@{pipeline().DataFactory}",
-								"EmailTo": "shiv.mohan@centricconsulting.com",
-								"ErrorMessage": "test email notification",
-								"ParameterSet": "test parameters set",
-								"PipelineName": "@{pipeline().Pipeline}",
-								"Subject": "Error Notification - Support Team"
+								"value": "{\n\t\"Subject\":\"@pipeline().parameters.Subject\",\n\t\"DataFactory\":\"@{pipeline().parameters.DataFactory}\",\n\t\"Pipeline\":\"@pipeline().parameters.Pipeline\",\n\t\"ErrorMessage\":\"@pipeline().parameters.ErrorMessage\",\n\t\"ParameterSet\":\"@pipeline().parameters.ParameterSet\"\n\t\"EmailTo\":\"@pipeline().parameters.EmailTo\"\n}",
+								"type": "Expression"
 							}
 						}
 					}
 				],
+				"parameters": {
+					"Subject": {
+						"type": "string",
+						"defaultValue": "Drift Template Notification"
+					},
+					"DataFactory": {
+						"type": "string",
+						"defaultValue": "ADFLRNSHIV"
+					},
+					"Pipeline": {
+						"type": "string",
+						"defaultValue": "Generic Pipeline"
+					},
+					"ErrorMessage": {
+						"type": "string",
+						"defaultValue": "There is some error in execution , please check logs !"
+					},
+					"ParameterSet": {
+						"type": "string",
+						"defaultValue": "Table name:"
+					},
+					"EmailTo": {
+						"type": "string",
+						"defaultValue": "shiv.mohan@centricconsulting.com"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -818,30 +716,6 @@
 				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/StopIR')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "WebHook1",
-						"type": "WebHook",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://0848f3f2-f53d-4b75-aedb-09bad2730840.webhook.eus.azure-automation.net/webhooks?token=%2fjnngvL6UI67NRv33MYKygXsVS4W2qyVrqWPlVepzxg%3d",
-							"method": "POST",
-							"headers": {},
-							"body": {},
-							"timeout": "00:10:00"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
 		}
 	]
 }
