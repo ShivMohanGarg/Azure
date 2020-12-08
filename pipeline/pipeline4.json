@@ -30,22 +30,28 @@
 		],
 		"parameters": {
 			"Subject": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Drift Template Notification"
 			},
 			"DataFactory": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "ADFLRNSHIV"
 			},
 			"Pipeline": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Generic Pipeline"
 			},
 			"ErrorMessage": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "There is some error in execution , please check logs !"
 			},
 			"ParameterSet": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Table name:"
 			},
 			"EmailTo": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "shiv.mohan@centricconsulting.com"
 			}
 		},
 		"annotations": []
