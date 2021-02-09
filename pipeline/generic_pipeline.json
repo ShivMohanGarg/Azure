@@ -72,10 +72,19 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"Subject": "Drift Template Notification",
-									"DataFactoryName": "@{pipeline().DataFactory}",
-									"PipelineName": "@{pipeline().Pipeline}",
+									"DataFactoryName": {
+										"value": "@{pipeline().DataFactory}",
+										"type": "Expression"
+									},
+									"PipelineName": {
+										"value": "@{pipeline().Pipeline}",
+										"type": "Expression"
+									},
 									"ErrorMessage": "Check Logs",
-									"ParameterSet": "@item().sourcetablename",
+									"ParameterSet": {
+										"value": "@item().sourcetablename",
+										"type": "Expression"
+									},
 									"EmailTo": "shiv.mohan@centricconsulting.com"
 								}
 							}
@@ -98,7 +107,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "Select primarykey,columnnames,sourcetablename,targettablename from dbo.stagingmetadata",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
