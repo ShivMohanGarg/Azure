@@ -2,7 +2,7 @@
 	"name": "AzureSqlTableSrc",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ADFSinkSqlDB",
+			"referenceName": "ADFSrcSqlDB",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
