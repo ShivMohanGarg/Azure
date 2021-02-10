@@ -68,19 +68,19 @@
 		"parameters": {
 			"primarykey": {
 				"type": "string",
-				"defaultValue": "Month"
+				"defaultValue": "'CatastropheID'"
 			},
 			"columnnames": {
 				"type": "string",
-				"defaultValue": "firstyear,Secondyear,Thirdyear"
+				"defaultValue": "'CatastropheDesc,Active,WhenRowLand,SysStartTime,SysEndTime,WhenRowCurrent'"
 			},
 			"sourcetablename": {
 				"type": "string",
-				"defaultValue": "airtravelsrc"
+				"defaultValue": "'Catastrophe'"
 			},
 			"targettablename": {
 				"type": "string",
-				"defaultValue": "vw_airtravel"
+				"defaultValue": "'Catastrophe'"
 			}
 		},
 		"annotations": []
