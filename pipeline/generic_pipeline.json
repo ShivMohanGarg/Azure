@@ -22,7 +22,7 @@
 					"isSequential": false,
 					"activities": [
 						{
-							"name": "Execute Pipeline1",
+							"name": "Execute Drift Schema Pipeline",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -53,11 +53,11 @@
 							}
 						},
 						{
-							"name": "pipeline4",
+							"name": "Send Notification",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
-									"activity": "Execute Pipeline1",
+									"activity": "Execute Drift Schema Pipeline",
 									"dependencyConditions": [
 										"Completed"
 									]
