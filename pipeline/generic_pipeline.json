@@ -107,6 +107,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select  top 2 primarykey,columnnames,sourcetablename,targettablename from vw_sysmetadata",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
