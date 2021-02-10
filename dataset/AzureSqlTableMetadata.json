@@ -2,7 +2,7 @@
 	"name": "AzureSqlTableMetadata",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ADFSinkSqlDB",
+			"referenceName": "ADFSrcSqlDB",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
