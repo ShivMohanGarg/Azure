@@ -8,7 +8,7 @@
 		"parameters": {
 			"sourcetablename": {
 				"type": "string",
-				"defaultValue": "addresses"
+				"defaultValue": "Catastrophe"
 			}
 		},
 		"annotations": [],
